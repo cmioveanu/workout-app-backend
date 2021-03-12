@@ -7,6 +7,7 @@ const { Pool } = require('pg');
 const pool = new Pool(dbConfig);
 
 
+//get all exercises
 myExercises.get('/', (req, res) => {
     pool.query('SELECT * FROM exercises', (error, results) => {
         if (error) {
@@ -14,4 +15,39 @@ myExercises.get('/', (req, res) => {
         }
         res.status(200).json(results.rows);
     })
+});
+
+//get the history of a specific exercise
+myExercises.get('/:exerciseId', (req, res) => {
+    const user_id = 1;
+    const exercise_id = 1;
+    pool.query(`
+        SELECT date, time_under_load, negatives FROM exercises_routines
+        WHERE user_id = 1 AND exercise_id = 1`,
+        (error, results) => {
+            if (error) {
+                throw error;
+            }
+            res.status(200).json(results.rows);
+        }
+    )
+});
+
+myExercises.post('/', async (req, res) => {
+    console.log(req.body);
+
+    const user_id = 1;
+    const newExerciseName = req.body.name;
+
+    pool.query(`
+        INSERT INTO exercises (name, user_id)
+        VALUES ($1, $2)`, [newExerciseName, user_id])
+        .then(() => {
+            pool.query('SELECT * FROM exercises', (error, results) => {
+                if (error) {
+                    throw error;
+                }
+                res.status(200).json(results.rows);
+            })
+        });
 });

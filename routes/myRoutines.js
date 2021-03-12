@@ -20,7 +20,7 @@ myRoutines.get('/', (req, res) => {
 
 //A specific routine for the Routines page
 myRoutines.get('/:routine', (req, res) => {
-    pool.query('SELECT * FROM routines', (error, results) => {
+    pool.query(`SELECT * FROM routines`, (error, results) => {
         if (error) {
             throw error;
         }

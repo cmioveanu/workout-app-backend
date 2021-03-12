@@ -8,7 +8,7 @@ const app = express();
 /****************************/
 const cors = require('cors');
 app.use(cors());
-express.json();
+app.use(express.json());
 
 
 
