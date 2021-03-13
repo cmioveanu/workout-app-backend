@@ -20,12 +20,15 @@ myExercises.get('/', (req, res) => {
 
 
 //get the history of a specific exercise
-myExercises.get('/:exerciseId', (req, res) => {
+myExercises.get('/:exerciseID/:number', (req, res) => {
     const user_id = 1;
-    const exercise_id = 1;
+
+    const exerciseID = req.params.exerciseID;
+    const numberOfEntries = req.params.number;
+
     pool.query(`
         SELECT date, time_under_load, negatives FROM exercises_routines
-        WHERE user_id = 1 AND exercise_id = 1`,
+        WHERE routine_id = 1 AND exercise_id = ${exerciseID} LIMIT ${numberOfEntries}`,
         (error, results) => {
             if (error) {
                 throw error;
