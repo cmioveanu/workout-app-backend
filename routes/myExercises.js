@@ -17,6 +17,8 @@ myExercises.get('/', (req, res) => {
     })
 });
 
+
+
 //get the history of a specific exercise
 myExercises.get('/:exerciseId', (req, res) => {
     const user_id = 1;
@@ -33,21 +35,30 @@ myExercises.get('/:exerciseId', (req, res) => {
     )
 });
 
+
+
+//Create new exercise
 myExercises.post('/', async (req, res) => {
     console.log(req.body);
 
-    const user_id = 1;
-    const newExerciseName = req.body.name;
+    
+    if (!req.body.name) {
+        res.status(404).send("Please enter a name before sending");
+    } else {
+        const user_id = 1;
+        const newRawName = req.body.name;
+        const newExerciseName = newRawName.charAt(0).toUpperCase() + newRawName.slice(1);
 
-    pool.query(`
+        pool.query(`
         INSERT INTO exercises (name, user_id)
         VALUES ($1, $2)`, [newExerciseName, user_id])
-        .then(() => {
-            pool.query('SELECT * FROM exercises', (error, results) => {
-                if (error) {
-                    throw error;
-                }
-                res.status(200).json(results.rows);
-            })
-        });
+            .then(() => {
+                pool.query('SELECT * FROM exercises', (error, results) => {
+                    if (error) {
+                        throw error;
+                    }
+                    res.status(200).json(results.rows);
+                })
+            });
+    }
 });

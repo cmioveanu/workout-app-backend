@@ -8,7 +8,9 @@ const app = express();
 /****************************/
 const cors = require('cors');
 app.use(cors());
-app.use(express.json());
+app.use(express.json({
+    type: 'application/json',
+}));
 
 
 
@@ -22,6 +24,7 @@ const passport = require('passport');
 app.use(passport.initialize());
 app.use(passport.session());
 require('./config/passport');
+
 
 app.use(function(req, res, next){
     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
