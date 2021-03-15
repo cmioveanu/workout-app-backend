@@ -9,7 +9,7 @@ const pool = new Pool(dbConfig);
 
 //get all exercises
 myExercises.get('/', (req, res) => {
-    pool.query('SELECT * FROM exercises', (error, results) => {
+    pool.query('SELECT * FROM exercises ORDER BY name', (error, results) => {
         if (error) {
             throw error;
         }
@@ -46,8 +46,6 @@ myExercises.get('/:exerciseID/:number', (req, res) => {
 
 //edit an exercise by id
 myExercises.put('/:exerciseID', (req, res) => {
-    console.log(req.body);
-
     const user_id = 1;
     const exerciseID = req.params.exerciseID;
 
@@ -86,7 +84,7 @@ myExercises.delete('/:exerciseID', (req, res) => {
         WHERE id = $1
         `, [exerciseID])
         .then(() => {
-            pool.query('SELECT * FROM exercises', (error, results) => {
+            pool.query('SELECT * FROM exercises ORDER BY name', (error, results) => {
                 if (error) {
                     throw error;
                 }
@@ -99,9 +97,6 @@ myExercises.delete('/:exerciseID', (req, res) => {
 
 //Create new exercise
 myExercises.post('/', async (req, res) => {
-    console.log(req.body);
-
-
     if (!req.body.name) {
         res.status(404).send("Please enter a name before sending");
     } else {
