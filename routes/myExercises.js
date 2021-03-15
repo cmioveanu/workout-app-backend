@@ -44,11 +44,64 @@ myExercises.get('/:exerciseID/:number', (req, res) => {
 
 
 
+//edit an exercise by id
+myExercises.put('/:exerciseID', (req, res) => {
+    console.log(req.body);
+
+    const user_id = 1;
+    const exerciseID = req.params.exerciseID;
+
+    if (!req.body.newName) {
+        res.status(404).send("Please enter a new name before sending");
+    } else {
+        //ensure the proper capitalization
+        const newName = req.body.newName.charAt(0).toUpperCase() + req.body.newName.slice(1);
+
+        pool.query(`
+        UPDATE exercises
+        SET name = $1
+        WHERE id = $2
+        `, [newName, exerciseID])   
+            .then(() => {
+                pool.query('SELECT * FROM exercises ORDER BY name', (error, results) => {
+                    if (error) {
+                        throw error;
+                    }
+                    res.status(200).json(results.rows);
+                })
+            });
+    }
+});
+
+
+
+//delete an exercise by id
+myExercises.delete('/:exerciseID', (req, res) => {
+    const user_id = 1;
+
+    const exerciseID = req.params.exerciseID;
+
+    pool.query(`
+        DELETE FROM exercises
+        WHERE id = $1
+        `, [exerciseID])
+        .then(() => {
+            pool.query('SELECT * FROM exercises', (error, results) => {
+                if (error) {
+                    throw error;
+                }
+                res.status(200).json(results.rows);
+            })
+        });
+})
+
+
+
 //Create new exercise
 myExercises.post('/', async (req, res) => {
     console.log(req.body);
 
-    
+
     if (!req.body.name) {
         res.status(404).send("Please enter a name before sending");
     } else {
