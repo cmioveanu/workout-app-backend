@@ -78,7 +78,7 @@ myRoutines.put('/:routineID', (req, res) => {
         UPDATE routines
         SET name = $1
         WHERE id = $2
-        `, [newName, routineID])   
+        `, [newName, routineID])
             .then(() => {
                 pool.query('SELECT * FROM routines ORDER BY name', (error, results) => {
                     if (error) {
@@ -108,6 +108,34 @@ myRoutines.delete('/:routineID', (req, res) => {
                 }
                 res.status(200).json(results.rows);
             })
+        });
+})
+
+
+//delete an exercise from a routine
+myRoutines.delete('/:routineID/:exerciseID', (req, res) => {
+    const user_id = 1;
+
+    const routineID = req.params.routineID;
+    const exerciseID = req.params.exerciseID;
+
+    pool.query(`
+        DELETE FROM exercises_routines
+        WHERE routine_id = $1 AND exercise_id = $2
+        `, [routineID, exerciseID])
+        .then(() => {
+            pool.query(`
+            SELECT *
+            FROM exercises_routines
+            JOIN exercises
+            ON exercises_routines.exercise_id = exercises.id`,
+                (error, results) => {
+                    if (error) {
+                        throw error;
+                    }
+
+                    res.status(200).send(results.rows);
+                });
         });
 })
 
