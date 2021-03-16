@@ -27,10 +27,14 @@ myExercises.get('/:exerciseID/:number', (req, res) => {
     const numberOfEntries = req.params.number;
 
     pool.query(`
-        SELECT date, time_under_load, negatives
-        FROM exercises_routines
+        SELECT *
+        FROM sets
+        JOIN exercises_routines
+        ON sets.exercise_routine_id = exercises_routines.id
+        JOIN exercises
+        ON exercises_routines.exercise_id = exercises.id
         WHERE exercise_id = ${exerciseID}
-        ORDER BY date DESC 
+        ORDER BY sets.id DESC 
         LIMIT ${numberOfEntries}
         `,
         (error, results) => {

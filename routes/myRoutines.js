@@ -9,7 +9,7 @@ const pool = new Pool(dbConfig);
 
 //All routines for the History page
 myRoutines.get('/', (req, res) => {
-    pool.query('SELECT * FROM routines', (error, results) => {
+    pool.query('SELECT * FROM routines ORDER BY name', (error, results) => {
         if (error) {
             throw error;
         }
@@ -17,6 +17,15 @@ myRoutines.get('/', (req, res) => {
     })
 });
 
+/* Routines history
+
+SELECT *
+FROM exercises_routines
+JOIN exercises
+ON exercises.id = exercises_routines.exercise_id
+WHERE routine_id = 2;
+
+*/
 
 //A specific routine for the Routines page
 myRoutines.get('/:routine', (req, res) => {
