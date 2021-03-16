@@ -18,32 +18,27 @@ myExercises.get('/', (req, res) => {
 });
 
 
+//create new exercise
+myExercises.post('/', async (req, res) => {
+    if (!req.body.name) {
+        res.status(404).send("Please enter a name before sending");
+    } else {
+        const user_id = 1;
+        const newRawName = req.body.name;
+        const newExerciseName = newRawName.charAt(0).toUpperCase() + newRawName.slice(1);
 
-//get the history of a specific exercise
-myExercises.get('/:exerciseID/:number', (req, res) => {
-    const user_id = 1;
-
-    const exerciseID = req.params.exerciseID;
-    const numberOfEntries = req.params.number;
-
-    pool.query(`
-        SELECT *
-        FROM sets
-        JOIN exercises_routines
-        ON sets.exercise_routine_id = exercises_routines.id
-        JOIN exercises
-        ON exercises_routines.exercise_id = exercises.id
-        WHERE exercise_id = ${exerciseID}
-        ORDER BY sets.id DESC 
-        LIMIT ${numberOfEntries}
-        `,
-        (error, results) => {
-            if (error) {
-                throw error;
-            }
-            res.status(200).json(results.rows);
-        }
-    )
+        pool.query(`
+        INSERT INTO exercises (name, user_id)
+        VALUES ($1, $2)`, [newExerciseName, user_id])
+            .then(() => {
+                pool.query('SELECT * FROM exercises', (error, results) => {
+                    if (error) {
+                        throw error;
+                    }
+                    res.status(200).json(results.rows);
+                })
+            });
+    }
 });
 
 
@@ -99,25 +94,32 @@ myExercises.delete('/:exerciseID', (req, res) => {
 
 
 
-//Create new exercise
-myExercises.post('/', async (req, res) => {
-    if (!req.body.name) {
-        res.status(404).send("Please enter a name before sending");
-    } else {
-        const user_id = 1;
-        const newRawName = req.body.name;
-        const newExerciseName = newRawName.charAt(0).toUpperCase() + newRawName.slice(1);
 
-        pool.query(`
-        INSERT INTO exercises (name, user_id)
-        VALUES ($1, $2)`, [newExerciseName, user_id])
-            .then(() => {
-                pool.query('SELECT * FROM exercises', (error, results) => {
-                    if (error) {
-                        throw error;
-                    }
-                    res.status(200).json(results.rows);
-                })
-            });
-    }
+
+
+//get the history of a specific exercise
+myExercises.get('/:exerciseID/:number', (req, res) => {
+    const user_id = 1;
+
+    const exerciseID = req.params.exerciseID;
+    const numberOfEntries = req.params.number;
+
+    pool.query(`
+        SELECT *
+        FROM sets
+        JOIN exercises_routines
+        ON sets.exercise_routine_id = exercises_routines.id
+        JOIN exercises
+        ON exercises_routines.exercise_id = exercises.id
+        WHERE exercise_id = ${exerciseID}
+        ORDER BY sets.id DESC 
+        LIMIT ${numberOfEntries}
+        `,
+        (error, results) => {
+            if (error) {
+                throw error;
+            }
+            res.status(200).json(results.rows);
+        }
+    )
 });
