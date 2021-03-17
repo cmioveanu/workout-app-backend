@@ -170,8 +170,30 @@ myRoutines.post('/:routineID/:exerciseID', (req, res, next) => {
 
 
 //get a specific routine history by ID
-myRoutines.get('/:routine', (req, res) => {
-    pool.query(`SELECT * FROM routines`,
+myRoutines.get('/:routineID/:number', (req, res) => {
+    const routineID = req.params.routineID;
+    const limit = req.params.number;
+
+    pool.query(`
+    SELECT routines.name,
+    workouts.total_time,
+    workouts.date,
+    exercises.name AS exercise,
+    sets.time_under_load,
+    sets.negatives
+    
+    FROM sets
+    JOIN workouts
+    ON sets.workout_id = workouts.id
+    JOIN exercises_routines
+    ON sets.exercise_routine_id = exercises_routines.id
+    JOIN routines
+    ON exercises_routines.routine_id = routines.id
+    JOIN exercises
+    ON exercises_routines.exercise_id = exercises.id
+    WHERE routine_id = $1
+    ORDER BY date DESC
+    LIMIT $2`,[routineID, limit],
         (error, results) => {
             if (error) {
                 throw error;
@@ -184,9 +206,9 @@ myRoutines.get('/:routine', (req, res) => {
 /*
 Routine history:
 
-SELECT routines.name AS routine,
-workouts.total_time AS workout_time,
-workouts.date AS workout_date,
+SELECT routines.name,
+workouts.total_time,
+workouts.date,
 exercises.name AS exercise,
 sets.time_under_load,
 sets.negatives
@@ -200,4 +222,5 @@ JOIN routines
 ON exercises_routines.routine_id = routines.id
 JOIN exercises
 ON exercises_routines.exercise_id = exercises.id
+WHERE routine_id = $1
 */
