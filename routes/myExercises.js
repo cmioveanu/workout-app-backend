@@ -58,7 +58,7 @@ myExercises.put('/:exerciseID', (req, res) => {
         UPDATE exercises
         SET name = $1
         WHERE id = $2
-        `, [newName, exerciseID])   
+        `, [newName, exerciseID])
             .then(() => {
                 pool.query('SELECT * FROM exercises ORDER BY name', (error, results) => {
                     if (error) {
@@ -105,16 +105,24 @@ myExercises.get('/:exerciseID/:number', (req, res) => {
     const numberOfEntries = req.params.number;
 
     pool.query(`
-        SELECT *
-        FROM sets
-        JOIN exercises_routines
-        ON sets.exercise_routine_id = exercises_routines.id
-        JOIN exercises
-        ON exercises_routines.exercise_id = exercises.id
-        WHERE exercise_id = ${exerciseID}
-        ORDER BY sets.id DESC 
-        LIMIT ${numberOfEntries}
-        `,
+    SELECT workouts.date,
+    exercises.name,
+    sets.time_under_load,
+    sets.negatives
+
+    FROM sets
+    JOIN workouts
+    ON sets.workout_id = workouts.id
+    JOIN exercises_routines
+    ON sets.exercise_routine_id = exercises_routines.id
+    JOIN routines
+    ON exercises_routines.routine_id = routines.id
+    JOIN exercises
+    ON exercises_routines.exercise_id = exercises.id
+    WHERE exercise_id = ${exerciseID}
+    ORDER BY sets.id DESC 
+    LIMIT ${numberOfEntries}
+    `,
         (error, results) => {
             if (error) {
                 throw error;
@@ -123,3 +131,29 @@ myExercises.get('/:exerciseID/:number', (req, res) => {
         }
     )
 });
+
+
+
+
+
+/*
+Exercise history
+
+`
+SELECT workouts.date AS workout_date,
+exercises.name AS exercise,
+sets.time_under_load,
+sets.negatives
+
+FROM sets
+JOIN workouts
+ON sets.workout_id = workouts.id
+JOIN exercises_routines
+ON sets.exercise_routine_id = exercises_routines.id
+JOIN routines
+ON exercises_routines.routine_id = routines.id
+JOIN exercises
+ON exercises_routines.exercise_id = exercises.id
+`
+
+*/

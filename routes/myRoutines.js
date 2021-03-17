@@ -179,3 +179,25 @@ myRoutines.get('/:routine', (req, res) => {
             res.status(200).json(results.rows);
         })
 });
+
+
+/*
+Routine history:
+
+SELECT routines.name AS routine,
+workouts.total_time AS workout_time,
+workouts.date AS workout_date,
+exercises.name AS exercise,
+sets.time_under_load,
+sets.negatives
+
+FROM sets
+JOIN workouts
+ON sets.workout_id = workouts.id
+JOIN exercises_routines
+ON sets.exercise_routine_id = exercises_routines.id
+JOIN routines
+ON exercises_routines.routine_id = routines.id
+JOIN exercises
+ON exercises_routines.exercise_id = exercises.id
+*/
