@@ -140,6 +140,35 @@ myRoutines.delete('/:routineID/:exerciseID', (req, res) => {
 })
 
 
+//add an exercise to a routine
+myRoutines.post('/:routineID/:exerciseID', (req, res, next) => {
+    const user_id = 1;
+
+    const routineID = req.params.routineID;
+    const exerciseID = req.params.exerciseID;
+
+    pool.query(`
+        INSERT INTO exercises_routines (routine_id, exercise_id)
+        VALUES ($1, $2)
+        ON CONFLICT (routine_id, exercise_id) DO NOTHING
+        `, [routineID, exerciseID])
+        .then(() => {
+            pool.query(`
+            SELECT *
+            FROM exercises_routines
+            JOIN exercises
+            ON exercises_routines.exercise_id = exercises.id`,
+                (error, results) => {
+                    if (error) {
+                        throw error;
+                    }
+
+                    res.status(200).send(results.rows);
+                });
+        });
+})
+
+
 //get a specific routine history by ID
 myRoutines.get('/:routine', (req, res) => {
     pool.query(`SELECT * FROM routines`,
