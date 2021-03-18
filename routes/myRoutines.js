@@ -169,6 +169,38 @@ myRoutines.post('/:routineID/:exerciseID', (req, res, next) => {
 })
 
 
+//get history for all routines
+myRoutines.get('/history/:number', (req, res) => {
+    const limit = req.params.number;
+
+    pool.query(`
+    SELECT routines.name,
+    workouts.total_time,
+    workouts.date,
+    exercises.name AS exercise,
+    sets.time_under_load,
+    sets.negatives
+    
+    FROM sets
+    JOIN workouts
+    ON sets.workout_id = workouts.id
+    JOIN exercises_routines
+    ON sets.exercise_routine_id = exercises_routines.id
+    JOIN routines
+    ON exercises_routines.routine_id = routines.id
+    JOIN exercises
+    ON exercises_routines.exercise_id = exercises.id
+    ORDER BY date DESC
+    LIMIT $1`,[limit],
+        (error, results) => {
+            if (error) {
+                throw error;
+            }
+            res.status(200).json(results.rows);
+        })
+});
+
+
 //get a specific routine history by ID
 myRoutines.get('/:routineID/:number', (req, res) => {
     const routineID = req.params.routineID;
