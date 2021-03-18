@@ -38,10 +38,12 @@ app.use(function(req, res, next){
 
 /**** Routes ****/
 /**********************/
+const workoutRouter = require('./routes/myWorkout');
 const exercisesRouter = require('./routes/myExercises');
 const routinesRouter = require('./routes/myRoutines');
 const accountRouter = require('./routes/myAccount');
 
+app.use('/myWorkout', workoutRouter);
 app.use('/myExercises', exercisesRouter);
 app.use('/myRoutines', routinesRouter);
 app.use('/myAccount', accountRouter);
