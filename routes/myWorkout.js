@@ -20,7 +20,7 @@ myWorkout.get('/:routineID', (req, res) => {
     ON exercises_routines.routine_id = routines.id
     JOIN exercises
     ON exercises_routines.exercise_id = exercises.id
-    WHERE routines.id = 1
+    WHERE routines.id = ${routineID}
     ORDER BY exercises.name`, 
     (error, results) => {
         if(error) {
