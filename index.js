@@ -14,6 +14,9 @@ app.use(express.json({
 
 
 
+
+
+
 /**** Authentication ****/
 /***************************/
 const session = require('express-session');
@@ -26,6 +29,8 @@ app.use(passport.session());
 require('./config/passport');
 
 
+
+//access control headers
 app.use(function(req, res, next){
     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -36,17 +41,24 @@ app.use(function(req, res, next){
 
 
 
+
+
+
 /**** Routes ****/
 /**********************/
 const workoutRouter = require('./routes/myWorkout');
 const exercisesRouter = require('./routes/myExercises');
 const routinesRouter = require('./routes/myRoutines');
 const accountRouter = require('./routes/myAccount');
+const loginRouter = require('./routes/login');
 
 app.use('/myWorkout', workoutRouter);
 app.use('/myExercises', exercisesRouter);
 app.use('/myRoutines', routinesRouter);
 app.use('/myAccount', accountRouter);
+app.use('/login', loginRouter);
+
+
 
 
 
