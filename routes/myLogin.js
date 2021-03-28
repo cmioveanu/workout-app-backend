@@ -8,10 +8,7 @@ const { Pool } = require('pg');
 const pool = new Pool(dbConfig);
 
 
-myLogin.post('/', passport.authenticate('local', {
-    successRedirect: '/workout',
-    failureRedirect: '/login'
-}), (req, res) => {
+myLogin.post('/', passport.authenticate('local'), (req, res) => {
     res.status(200).send("Logged in!");
 });
 
