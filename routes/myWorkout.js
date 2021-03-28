@@ -6,6 +6,9 @@ const dbConfig = require('../config/db');
 const { Pool } = require('pg');
 const pool = new Pool(dbConfig);
 
+const checkAuth = require('../utils/checkAuth');
+myWorkout.use(checkAuth);
+
 
 //get exercises for currently selected workout
 myWorkout.get('/:routineID', (req, res) => {

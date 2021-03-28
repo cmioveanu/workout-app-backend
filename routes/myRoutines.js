@@ -6,6 +6,9 @@ const dbConfig = require('../config/db');
 const { Pool } = require('pg');
 const pool = new Pool(dbConfig);
 
+const checkAuth = require('../utils/checkAuth');
+myRoutines.use(checkAuth);
+
 
 //get all the routines
 myRoutines.get('/', (req, res) => {
@@ -233,26 +236,3 @@ myRoutines.get('/:routineID/:number', (req, res) => {
             res.status(200).json(results.rows);
         })
 });
-
-
-/*
-Routine history:
-
-SELECT routines.name,
-workouts.total_time,
-workouts.date,
-exercises.name AS exercise,
-sets.time_under_load,
-sets.negatives
-
-FROM sets
-JOIN workouts
-ON sets.workout_id = workouts.id
-JOIN exercises_routines
-ON sets.exercise_routine_id = exercises_routines.id
-JOIN routines
-ON exercises_routines.routine_id = routines.id
-JOIN exercises
-ON exercises_routines.exercise_id = exercises.id
-WHERE routine_id = $1
-*/
