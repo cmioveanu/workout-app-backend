@@ -9,9 +9,14 @@ const pool = new Pool(dbConfig);
 const checkAuth = require('../utils/checkAuth');
 exercises.use(checkAuth);
 
+
+//select all exercises query, reused a few times
+const selectAllQuery = 'SELECT * FROM exercises WHERE user_id = $1 ORDER BY name';
+
+
 //get all exercises
 exercises.get('/', (req, res) => {
-    pool.query('SELECT * FROM exercises ORDER BY name', (error, results) => {
+    pool.query(selectAllQuery, [req.user.id], (error, results) => {
         if (error) {
             throw error;
         }
@@ -25,15 +30,14 @@ exercises.post('/', async (req, res) => {
     if (!req.body.name) {
         res.status(404).send("Please enter a name before sending");
     } else {
-        const user_id = 1;
         const newRawName = req.body.name;
         const newExerciseName = newRawName.charAt(0).toUpperCase() + newRawName.slice(1);
 
         pool.query(`
         INSERT INTO exercises (name, user_id)
-        VALUES ($1, $2)`, [newExerciseName, user_id])
+        VALUES ($1, $2)`, [newExerciseName, req.user.id])
             .then(() => {
-                pool.query('SELECT * FROM exercises', (error, results) => {
+                pool.query(selectAllQuery, [req.user.id], (error, results) => {
                     if (error) {
                         throw error;
                     }
@@ -44,10 +48,8 @@ exercises.post('/', async (req, res) => {
 });
 
 
-
 //edit an exercise by id
 exercises.put('/:exerciseID', (req, res) => {
-    const user_id = 1;
     const exerciseID = req.params.exerciseID;
 
     if (!req.body.newName) {
@@ -62,7 +64,7 @@ exercises.put('/:exerciseID', (req, res) => {
         WHERE id = $2
         `, [newName, exerciseID])
             .then(() => {
-                pool.query('SELECT * FROM exercises ORDER BY name', (error, results) => {
+                pool.query(selectAllQuery, [req.user.id], (error, results) => {
                     if (error) {
                         throw error;
                     }
@@ -73,11 +75,8 @@ exercises.put('/:exerciseID', (req, res) => {
 });
 
 
-
 //delete an exercise by id
 exercises.delete('/:exerciseID', (req, res) => {
-    const user_id = 1;
-
     const exerciseID = req.params.exerciseID;
 
     pool.query(`
@@ -85,7 +84,7 @@ exercises.delete('/:exerciseID', (req, res) => {
         WHERE id = $1
         `, [exerciseID])
         .then(() => {
-            pool.query('SELECT * FROM exercises ORDER BY name', (error, results) => {
+            pool.query(selectAllQuery, [req.user.id], (error, results) => {
                 if (error) {
                     throw error;
                 }
@@ -95,14 +94,8 @@ exercises.delete('/:exerciseID', (req, res) => {
 })
 
 
-
-
-
-
 //get the history of a specific exercise
 exercises.get('/:exerciseID/:number', (req, res) => {
-    const user_id = 1;
-
     const exerciseID = req.params.exerciseID;
     const numberOfEntries = req.params.number;
 

@@ -1,36 +1,47 @@
 const dbConfig = require('../config/db');
 const { Pool } = require('pg');
 const pool = new Pool(dbConfig);
+const bcrypt = require('bcrypt');
 
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
-passport.use(new LocalStrategy(
-    //verify callback
-    (username, password, done) => {
-        pool.query(`
+
+passport.use(new LocalStrategy((username, password, done) => {
+    pool.query(`
         SELECT * FROM users
         WHERE email = $1
-        AND password = $2`, [username, password], (err, result) => {
-            if (err) {
-                return done(err);
-            }
-            if (!result.rows[0]) {
+        `, [username], (err, result) => {
+        if (err) {
+            return done(err);
+        }
+
+        //if username doesn't exist in DB, return false
+        if (!result.rows[0]) {
+            return done(null, false);
+        }
+
+        //if passwords match, return the user; otherwise, return false
+        bcrypt.compare(password, result.rows[0].password, (err, check) => {
+            if (check) {
+                return done(null, result.rows[0]);
+            } else {
                 return done(null, false);
             }
-            return done(null, result.rows[0]);
-        });
-    }
+        })
+    });
+}
 ));
 
 
+//serialize user id in cookie and get the user from DB on further requests, based on id
 passport.serializeUser(function (user, done) {
     done(null, user.id);
 });
 
 passport.deserializeUser(function (id, done) {
     pool.query(`
-    SELECT * FROM users
+    SELECT email, id FROM users
     WHERE id = $1`, [id], (err, result) => {
         done(err, result.rows[0]);
     })

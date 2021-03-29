@@ -10,16 +10,19 @@ const checkAuth = require('../utils/checkAuth');
 routines.use(checkAuth);
 
 
+//select all routines query, reused a few times
+const selectAllQuery = 'SELECT * FROM routines WHERE user_id = $1 ORDER BY name';
+
+
 //get all the routines
 routines.get('/', (req, res) => {
-    pool.query('SELECT * FROM routines ORDER BY name',
-        (error, results) => {
-            if (error) {
-                throw error;
-            }
+    pool.query(selectAllQuery, [req.user.id], (error, results) => {
+        if (error) {
+            throw error;
+        }
 
-            res.status(200).send(results.rows);
-        });
+        res.status(200).send(results.rows);
+    });
 });
 
 
@@ -29,7 +32,8 @@ routines.get('/exercises', (req, res) => {
         SELECT *
         FROM exercises_routines
         JOIN exercises
-        ON exercises_routines.exercise_id = exercises.id`,
+        ON exercises_routines.exercise_id = exercises.id
+        WHERE exercises.user_id = $1`, [req.user.id],
         (error, results) => {
             if (error) {
                 throw error;
@@ -45,7 +49,7 @@ routines.post('/', async (req, res) => {
     if (!req.body.name) {
         res.status(404).send("Please enter a name before sending");
     } else {
-        const user_id = 1;
+        const user_id = req.user.id;
         const newRawName = req.body.name;
         const newRoutineName = newRawName.charAt(0).toUpperCase() + newRawName.slice(1);
 
@@ -53,8 +57,7 @@ routines.post('/', async (req, res) => {
         INSERT INTO routines (name, user_id)
         VALUES ($1, $2)`, [newRoutineName, user_id])
             .then(() => {
-                pool.query('SELECT * FROM routines ORDER BY name',
-                    (error, results) => {
+                pool.query(selectAllQuery, [req.user.id], (error, results) => {
                         if (error) {
                             throw error;
                         }
@@ -68,7 +71,6 @@ routines.post('/', async (req, res) => {
 
 //edit a routine by id
 routines.put('/:routineID', (req, res) => {
-    const user_id = 1;
     const routineID = req.params.routineID;
 
     if (!req.body.newName) {
@@ -83,7 +85,7 @@ routines.put('/:routineID', (req, res) => {
         WHERE id = $2
         `, [newName, routineID])
             .then(() => {
-                pool.query('SELECT * FROM routines ORDER BY name', (error, results) => {
+                pool.query(selectAllQuery, [req.user.id], (error, results) => {
                     if (error) {
                         throw error;
                     }
@@ -96,8 +98,6 @@ routines.put('/:routineID', (req, res) => {
 
 //delete a routine by id
 routines.delete('/:routineID', (req, res) => {
-    const user_id = 1;
-
     const routineID = req.params.routineID;
 
     pool.query(`
@@ -105,7 +105,7 @@ routines.delete('/:routineID', (req, res) => {
         WHERE id = $1
         `, [routineID])
         .then(() => {
-            pool.query('SELECT * FROM routines ORDER BY name', (error, results) => {
+            pool.query(selectAllQuery, [req.user.id], (error, results) => {
                 if (error) {
                     throw error;
                 }
@@ -117,8 +117,6 @@ routines.delete('/:routineID', (req, res) => {
 
 //delete an exercise from a routine
 routines.delete('/:routineID/:exerciseID', (req, res) => {
-    const user_id = 1;
-
     const routineID = req.params.routineID;
     const exerciseID = req.params.exerciseID;
 
@@ -145,8 +143,6 @@ routines.delete('/:routineID/:exerciseID', (req, res) => {
 
 //add an exercise to a routine
 routines.post('/:routineID/:exerciseID', (req, res, next) => {
-    const user_id = 1;
-
     const routineID = req.params.routineID;
     const exerciseID = req.params.exerciseID;
 
@@ -193,8 +189,11 @@ routines.get('/history/:number', (req, res) => {
     ON exercises_routines.routine_id = routines.id
     JOIN exercises
     ON exercises_routines.exercise_id = exercises.id
+
+    WHERE routines.user_id = $1
+
     ORDER BY date DESC
-    LIMIT $1`,[limit],
+    LIMIT $2`, [req.user.id, limit],
         (error, results) => {
             if (error) {
                 throw error;
@@ -228,7 +227,7 @@ routines.get('/:routineID/:number', (req, res) => {
     ON exercises_routines.exercise_id = exercises.id
     WHERE routine_id = $1
     ORDER BY date DESC
-    LIMIT $2`,[routineID, limit],
+    LIMIT $2`, [routineID, limit],
         (error, results) => {
             if (error) {
                 throw error;

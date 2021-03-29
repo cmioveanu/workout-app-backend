@@ -13,6 +13,7 @@ workout.use(checkAuth);
 //get exercises for currently selected workout
 workout.get('/:routineID', (req, res) => {
     const routineID = req.params.routineID;
+
     pool.query(`
     SELECT
     exercises.name,
@@ -23,8 +24,8 @@ workout.get('/:routineID', (req, res) => {
     ON exercises_routines.routine_id = routines.id
     JOIN exercises
     ON exercises_routines.exercise_id = exercises.id
-    WHERE routines.id = ${routineID}
-    ORDER BY exercises.name`,
+    WHERE routines.id = $1
+    ORDER BY exercises.name`, [routineID],
         (error, results) => {
             if (error) {
                 throw error;
@@ -37,7 +38,6 @@ workout.get('/:routineID', (req, res) => {
 
 //record new workout
 workout.post('/', (req, res) => {
-    const userID = 1;
     const totalTime = req.body.totalWorkoutTime;
     const exercises = req.body.exercises;
 
@@ -47,10 +47,10 @@ workout.post('/', (req, res) => {
 
         //create a new workout with the current date
         pool.query(`
-    INSERT INTO workouts(user_id, date, total_time)
-    VALUES($1, current_timestamp, $2)
-    RETURNING id;
-    `, [userID, totalTime,], (error, results) => {
+        INSERT INTO workouts(user_id, date, total_time)
+        VALUES($1, current_timestamp, $2)
+        RETURNING id;
+        `, [req.user.id, totalTime], (error, results) => {
             if (error) {
                 throw error;
             }
@@ -72,6 +72,5 @@ workout.post('/', (req, res) => {
             })
 
         });
-
     }
 });
