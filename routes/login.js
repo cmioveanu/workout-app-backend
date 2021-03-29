@@ -20,7 +20,7 @@ login.post('/register', (req, res) => {
     pool.query(`SELECT * FROM users
     WHERE email = $1`, [email], (err, result) => {
         if (result.rows[0]) {
-            res.status(404).send("Username already exists. Please login.");
+            res.status(403).send("Username already exists. Please login.");
         } else {
             pool.query(`
             INSERT INTO users (email, password)
