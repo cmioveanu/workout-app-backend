@@ -1,6 +1,6 @@
 const express = require('express');
-const myLogin = express.Router();
-module.exports = myLogin;
+const login = express.Router();
+module.exports = login;
 const passport = require('passport');
 
 const dbConfig = require('../config/db');
@@ -8,12 +8,12 @@ const { Pool } = require('pg');
 const pool = new Pool(dbConfig);
 
 
-myLogin.post('/', passport.authenticate('local'), (req, res) => {
+login.post('/', passport.authenticate('local'), (req, res) => {
     res.status(200).send("Logged in!");
 });
 
 
-myLogin.post('/register', (req, res) => {
+login.post('/register', (req, res) => {
     const email = req.body.username;
     const password = req.body.password;
 

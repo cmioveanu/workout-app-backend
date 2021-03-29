@@ -1,17 +1,17 @@
 const express = require('express');
-const myWorkout = express.Router();
-module.exports = myWorkout;
+const workout = express.Router();
+module.exports = workout;
 
 const dbConfig = require('../config/db');
 const { Pool } = require('pg');
 const pool = new Pool(dbConfig);
 
 const checkAuth = require('../utils/checkAuth');
-myWorkout.use(checkAuth);
+workout.use(checkAuth);
 
 
 //get exercises for currently selected workout
-myWorkout.get('/:routineID', (req, res) => {
+workout.get('/:routineID', (req, res) => {
     const routineID = req.params.routineID;
     pool.query(`
     SELECT
@@ -36,7 +36,7 @@ myWorkout.get('/:routineID', (req, res) => {
 
 
 //record new workout
-myWorkout.post('/', (req, res) => {
+workout.post('/', (req, res) => {
     const userID = 1;
     const totalTime = req.body.totalWorkoutTime;
     const exercises = req.body.exercises;

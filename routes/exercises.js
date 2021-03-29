@@ -1,16 +1,16 @@
 const express = require('express');
-const myExercises = express.Router();
-module.exports = myExercises;
+const exercises = express.Router();
+module.exports = exercises;
 
 const dbConfig = require('../config/db');
 const { Pool } = require('pg');
 const pool = new Pool(dbConfig);
 
 const checkAuth = require('../utils/checkAuth');
-myExercises.use(checkAuth);
+exercises.use(checkAuth);
 
 //get all exercises
-myExercises.get('/', (req, res) => {
+exercises.get('/', (req, res) => {
     pool.query('SELECT * FROM exercises ORDER BY name', (error, results) => {
         if (error) {
             throw error;
@@ -21,7 +21,7 @@ myExercises.get('/', (req, res) => {
 
 
 //create new exercise
-myExercises.post('/', async (req, res) => {
+exercises.post('/', async (req, res) => {
     if (!req.body.name) {
         res.status(404).send("Please enter a name before sending");
     } else {
@@ -46,7 +46,7 @@ myExercises.post('/', async (req, res) => {
 
 
 //edit an exercise by id
-myExercises.put('/:exerciseID', (req, res) => {
+exercises.put('/:exerciseID', (req, res) => {
     const user_id = 1;
     const exerciseID = req.params.exerciseID;
 
@@ -75,7 +75,7 @@ myExercises.put('/:exerciseID', (req, res) => {
 
 
 //delete an exercise by id
-myExercises.delete('/:exerciseID', (req, res) => {
+exercises.delete('/:exerciseID', (req, res) => {
     const user_id = 1;
 
     const exerciseID = req.params.exerciseID;
@@ -100,7 +100,7 @@ myExercises.delete('/:exerciseID', (req, res) => {
 
 
 //get the history of a specific exercise
-myExercises.get('/:exerciseID/:number', (req, res) => {
+exercises.get('/:exerciseID/:number', (req, res) => {
     const user_id = 1;
 
     const exerciseID = req.params.exerciseID;

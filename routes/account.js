@@ -1,6 +1,6 @@
 const express = require('express');
-const myAccount = express.Router();
-module.exports = myAccount;
+const account = express.Router();
+module.exports = account;
 
 const dbConfig = require('../config/db');
 const { Pool } = require('pg');

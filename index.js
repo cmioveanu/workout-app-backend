@@ -26,17 +26,17 @@ require('./config/passport');
 
 
 /* Routes */
-const workoutRouter = require('./routes/myWorkout');
-const exercisesRouter = require('./routes/myExercises');
-const routinesRouter = require('./routes/myRoutines');
-const accountRouter = require('./routes/myAccount');
-const loginRouter = require('./routes/myLogin');
+const workoutRouter = require('./routes/workout');
+const exercisesRouter = require('./routes/exercises');
+const routinesRouter = require('./routes/routines');
+const accountRouter = require('./routes/account');
+const loginRouter = require('./routes/login');
 
-app.use('/myWorkout', workoutRouter);
-app.use('/myExercises', exercisesRouter);
-app.use('/myRoutines', routinesRouter);
-app.use('/myAccount', accountRouter);
-app.use('/myLogin', loginRouter);
+app.use('api/workout', workoutRouter);
+app.use('api/exercises', exercisesRouter);
+app.use('api/routines', routinesRouter);
+app.use('api/account', accountRouter);
+app.use('api/login', loginRouter);
 
 
 

@@ -1,17 +1,17 @@
 const express = require('express');
-const myRoutines = express.Router();
-module.exports = myRoutines;
+const routines = express.Router();
+module.exports = routines;
 
 const dbConfig = require('../config/db');
 const { Pool } = require('pg');
 const pool = new Pool(dbConfig);
 
 const checkAuth = require('../utils/checkAuth');
-myRoutines.use(checkAuth);
+routines.use(checkAuth);
 
 
 //get all the routines
-myRoutines.get('/', (req, res) => {
+routines.get('/', (req, res) => {
     pool.query('SELECT * FROM routines ORDER BY name',
         (error, results) => {
             if (error) {
@@ -24,7 +24,7 @@ myRoutines.get('/', (req, res) => {
 
 
 //get the exercises that are part of routines
-myRoutines.get('/exercises', (req, res) => {
+routines.get('/exercises', (req, res) => {
     pool.query(`
         SELECT *
         FROM exercises_routines
@@ -41,7 +41,7 @@ myRoutines.get('/exercises', (req, res) => {
 
 
 //create new routine
-myRoutines.post('/', async (req, res) => {
+routines.post('/', async (req, res) => {
     if (!req.body.name) {
         res.status(404).send("Please enter a name before sending");
     } else {
@@ -67,7 +67,7 @@ myRoutines.post('/', async (req, res) => {
 
 
 //edit a routine by id
-myRoutines.put('/:routineID', (req, res) => {
+routines.put('/:routineID', (req, res) => {
     const user_id = 1;
     const routineID = req.params.routineID;
 
@@ -95,7 +95,7 @@ myRoutines.put('/:routineID', (req, res) => {
 
 
 //delete a routine by id
-myRoutines.delete('/:routineID', (req, res) => {
+routines.delete('/:routineID', (req, res) => {
     const user_id = 1;
 
     const routineID = req.params.routineID;
@@ -116,7 +116,7 @@ myRoutines.delete('/:routineID', (req, res) => {
 
 
 //delete an exercise from a routine
-myRoutines.delete('/:routineID/:exerciseID', (req, res) => {
+routines.delete('/:routineID/:exerciseID', (req, res) => {
     const user_id = 1;
 
     const routineID = req.params.routineID;
@@ -144,7 +144,7 @@ myRoutines.delete('/:routineID/:exerciseID', (req, res) => {
 
 
 //add an exercise to a routine
-myRoutines.post('/:routineID/:exerciseID', (req, res, next) => {
+routines.post('/:routineID/:exerciseID', (req, res, next) => {
     const user_id = 1;
 
     const routineID = req.params.routineID;
@@ -173,7 +173,7 @@ myRoutines.post('/:routineID/:exerciseID', (req, res, next) => {
 
 
 //get history for all routines
-myRoutines.get('/history/:number', (req, res) => {
+routines.get('/history/:number', (req, res) => {
     const limit = req.params.number;
 
     pool.query(`
@@ -205,7 +205,7 @@ myRoutines.get('/history/:number', (req, res) => {
 
 
 //get a specific routine history by ID
-myRoutines.get('/:routineID/:number', (req, res) => {
+routines.get('/:routineID/:number', (req, res) => {
     const routineID = req.params.routineID;
     const limit = req.params.number;
 
