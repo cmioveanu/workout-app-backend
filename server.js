@@ -32,11 +32,11 @@ const routinesRouter = require('./routes/routines');
 const accountRouter = require('./routes/account');
 const loginRouter = require('./routes/login');
 
-app.use('api/workout', workoutRouter);
-app.use('api/exercises', exercisesRouter);
-app.use('api/routines', routinesRouter);
-app.use('api/account', accountRouter);
-app.use('api/login', loginRouter);
+app.use('/api/workout', workoutRouter);
+app.use('/api/exercises', exercisesRouter);
+app.use('/api/routines', routinesRouter);
+app.use('/api/account', accountRouter);
+app.use('/api/login', loginRouter);
 
 
 

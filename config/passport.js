@@ -13,15 +13,11 @@ passport.use(new LocalStrategy(
         WHERE email = $1
         AND password = $2`, [username, password], (err, result) => {
             if (err) {
-                console.log("Error found!");
                 return done(err);
             }
             if (!result.rows[0]) {
-                console.log("User not found!");
                 return done(null, false);
             }
-            console.log("User found - logged in!");
-            console.log(result.rows[0]);
             return done(null, result.rows[0]);
         });
     }
