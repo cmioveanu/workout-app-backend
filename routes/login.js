@@ -15,6 +15,11 @@ login.post('/', passport.authenticate('local'), (req, res) => {
 });
 
 
+login.get('/logout', (req, res) => {
+    req.logout();
+});
+
+
 login.post('/register', (req, res) => {
     const email = req.body.username;
     const password = req.body.password;
