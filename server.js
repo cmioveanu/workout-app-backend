@@ -30,14 +30,12 @@ const workoutRouter = require('./routes/workout');
 const exercisesRouter = require('./routes/exercises');
 const routinesRouter = require('./routes/routines');
 const accountRouter = require('./routes/account');
-const loginRouter = require('./routes/login');
+const loginRouter = require('./routes/account');
 
 app.use('/api/workout', workoutRouter);
 app.use('/api/exercises', exercisesRouter);
 app.use('/api/routines', routinesRouter);
 app.use('/api/account', accountRouter);
-app.use('/api/login', loginRouter);
-
 
 
 
