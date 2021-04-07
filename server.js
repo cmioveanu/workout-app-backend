@@ -15,7 +15,11 @@ app.use(express.json({
 
 /* Authentication */
 const session = require('express-session');
-app.use(session({secret: 'mySecretKey'}));
+app.use(session({
+    resave: false,
+    saveUninitialized: false,
+    secret: 'mySecretKey'
+}));
 app.use(require('cookie-parser')());
 
 const passport = require('passport');
