@@ -44,7 +44,6 @@ workout.post('/', (req, res) => {
     const recordPermission = exercises.some(exercise => exercise.timeUnderLoad > 0);
 
     if (recordPermission) {
-
         //create a new workout with the current date
         pool.query(`
         INSERT INTO workouts(user_id, date, total_time)
@@ -63,14 +62,18 @@ workout.post('/', (req, res) => {
                     pool.query(`
                 INSERT INTO sets(workout_id, exercise_routine_id, time_under_load, negatives)
                 VALUES($1, $2, $3, $4)
-                `, [workoutID, exercise.id, exercise.timeUnderLoad, exercise.negatives], (err, res) => {
+                `, [workoutID, exercise.id, exercise.timeUnderLoad, exercise.negatives], (err, result) => {
                         if (err) {
                             throw err;
                         }
-                    })
+
+                        res.status(201).send("Workout recorded!");
+                    });
                 }
             })
 
         });
+    } else {
+        res.status(403).send("Workout not recorded. Complete at least one exercise.");
     }
 });
