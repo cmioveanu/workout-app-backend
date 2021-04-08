@@ -9,6 +9,7 @@ const pool = new Pool(dbConfig);
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 
+const checkAuth = require('../utils/checkAuth');
 
 account.post('/register', (req, res) => {
     const email = req.body.username;
@@ -44,6 +45,11 @@ account.post('/login', passport.authenticate('local'), (req, res) => {
 account.get('/logout', (req, res) => {
     req.logout();
     res.json({ status: "logout" });
+});
+
+
+account.get('/checkLoginStatus', checkAuth, (req, res) => {
+    res.status(200).send('User is logged in.');
 });
 
 
