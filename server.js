@@ -14,12 +14,25 @@ app.use(express.json({
 
 
 /* Authentication */
+const dbConfig = require('./config/db');
+const { Pool } = require('pg');
+const pool = new Pool(dbConfig);
+
 const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
+
+
 app.use(session({
+    store: new pgSession({
+        pool: pool,
+        tableName: 'session'
+    }),
+    secret: process.env.COOKIE_SECRET,
     resave: false,
     saveUninitialized: false,
-    secret: 'mySecretKey'
-}));
+    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
+  }));
+
 app.use(require('cookie-parser')());
 
 const passport = require('passport');

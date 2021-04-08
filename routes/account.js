@@ -43,6 +43,7 @@ account.post('/login', passport.authenticate('local'), (req, res) => {
 
 account.get('/logout', (req, res) => {
     req.logout();
+    res.json({ status: "logout" });
 });
 
 
