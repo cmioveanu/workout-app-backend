@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-
+app.proxy = true;
 
 
 /* Basic Dependencies */
@@ -34,6 +34,7 @@ app.use(session({
         httpOnly: true, 
         sameSite: 'none',
         secure: true,
+        domain: 'https://hit-workout-app-frontend.herokuapp.com/',
         maxAge: 30 * 24 * 60 * 60 * 1000 
     } // 30 days
   }));
