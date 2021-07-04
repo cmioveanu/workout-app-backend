@@ -4,6 +4,7 @@ const app = express();
 
 
 /* Basic Dependencies */
+const path = require('path');
 const cors = require('cors');
 app.use(cors());
 app.use(express.json({
