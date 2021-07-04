@@ -29,9 +29,7 @@ app.use(session({
     secret: process.env.COOKIE_SECRET,
     resave: false,
     saveUninitialized: false,
-    proxy : true,
     cookie: {
-        sameSite: 'none',
         secure: true,
         maxAge: 30 * 24 * 60 * 60 * 1000 
     } // 30 days
@@ -58,6 +56,12 @@ app.use('/api/routines', routinesRouter);
 app.use('/api/account', accountRouter);
 
 
+app.use(express.static(path.join(__dirname, 'build')));
+
+
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 
 /* Start Server */
