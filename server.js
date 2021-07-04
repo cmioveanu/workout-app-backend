@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-app.proxy = true;
 
 
 /* Basic Dependencies */
@@ -30,11 +29,10 @@ app.use(session({
     secret: process.env.COOKIE_SECRET,
     resave: false,
     saveUninitialized: false,
+    proxy : true,
     cookie: {
-        httpOnly: true, 
         sameSite: 'none',
         secure: true,
-        domain: 'https://hit-workout-app-frontend.herokuapp.com/',
         maxAge: 30 * 24 * 60 * 60 * 1000 
     } // 30 days
   }));
@@ -53,7 +51,6 @@ const workoutRouter = require('./routes/workout');
 const exercisesRouter = require('./routes/exercises');
 const routinesRouter = require('./routes/routines');
 const accountRouter = require('./routes/account');
-const loginRouter = require('./routes/account');
 
 app.use('/api/workout', workoutRouter);
 app.use('/api/exercises', exercisesRouter);
