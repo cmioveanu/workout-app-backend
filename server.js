@@ -5,8 +5,8 @@ const app = express();
 
 /* Basic Dependencies */
 const path = require('path');
-const cors = require('cors');
-app.use(cors());
+//const cors = require('cors');
+//app.use(cors());
 app.use(express.json({
     type: 'application/json',
 }));
@@ -31,6 +31,8 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
+        httpOnly: true,
+        sameSite: 'none',
         secure: true,
         maxAge: 30 * 24 * 60 * 60 * 1000 
     } // 30 days
