@@ -5,8 +5,8 @@ const app = express();
 
 /* Basic Dependencies */
 const path = require('path');
-//const cors = require('cors');
-//app.use(cors());
+const cors = require('cors');
+app.options('*', cors());
 app.use(express.json({
     type: 'application/json',
 }));
@@ -64,6 +64,13 @@ app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
 });
 
 
